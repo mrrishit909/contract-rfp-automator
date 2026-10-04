@@ -9,4 +9,4 @@ web/dist/
 .mypy_cache/
 .pytest_cache/
 *.egg-info/
-data/
+/data/
