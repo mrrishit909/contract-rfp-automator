@@ -1,0 +1,25 @@
+# docker compose up --build      -> API + workspace on http://localhost:8000, with a Qdrant vector database
+# docker compose run --rm test   -> the test suite (no API key or network needed: the model is faked)
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.15.4
+    volumes: [qdrant:/qdrant/storage]
+
+  api:
+    build: .
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?put OPENAI_API_KEY in .env - see README}
+      APP_API_TOKEN: ${APP_API_TOKEN:?put APP_API_TOKEN in .env - see README}
+      QDRANT_URL: http://qdrant:6333
+      DATA_DIR: /data
+    volumes: [docs:/data]
+    ports: ["8000:8000"]
+    depends_on: [qdrant]
+
+  test:
+    build: {context: ., target: test}
+    profiles: [test]
+
+volumes:
+  qdrant:
+  docs:
